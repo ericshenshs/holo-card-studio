@@ -1,0 +1,29 @@
+{
+  "title": "眠神",
+  "subtitle": "Goddess of Slumber",
+  "technique": "永夜摇篮曲",
+  "tagline": "Lullaby of the Eternal Night",
+  "edition": "002 / 002",
+  "collection": "个人全息典藏",
+  "description": "A holographic tarot card depicting the Goddess of Sleep, draped in silver-lavender robes, floating through the night sky with outstretched hands releasing dream dust beneath twin crescent moons.",
+  "assets": {
+    "model": "./assets/card.glb",
+    "subject": "./assets/subject.png",
+    "background": "./assets/background.png",
+    "text": "./assets/text.png",
+    "lineart": "./assets/lineart.png"
+  },
+  "parameters": {
+    "subjectScale": 1.25,
+    "subjectDepth": 0.4,
+    "backgroundDepth": -0.25,
+    "foil": 0.65
+  },
+  "safeArea": {
+    "scale": 1.12,
+    "offset": [
+      -0.06,
+      -0.085
+    ]
+  }
+}
