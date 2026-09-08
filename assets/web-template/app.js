@@ -92,7 +92,7 @@ function setupControls(){
  $('details').onclick=$('soundless').onclick=()=>$('about').showModal();$('about').querySelector('.close').onclick=()=>$('about').close();
 }
 function animate(now){const dt=Math.min((now-lastTime)/1000,.1)||0;lastTime=now;if(!document.hidden)elapsed+=dt;if(auto){targetY=Math.sin(elapsed*.65)*.38;targetX=Math.sin(elapsed*.85)*.12;}
- const ease=reduced?1:1-Math.exp(-dt*8);rotationX+=(targetX-rotationX)*ease;rotationY+=(targetY-rotationY)*ease;root.rotation.set(rotationX,rotationY,0);root.updateMatrixWorld(true);
+ const ease=reduced?1:1-Math.exp(-dt*8);rotationX+=(targetX-rotationX)*ease;rotationY+=(targetY-rotationY)*ease;root.rotation.set(rotationX,rotationY,Math.PI); /* [cc] 180° Z rotation to correct orientation for programmatic GLB geometry */root.updateMatrixWorld(true);
  uniforms.uView.value.copy(camera.position).applyMatrix4(new THREE.Matrix4().copy(root.matrixWorld).invert()).normalize();uniforms.uTime.value=reduced&&!auto?0:elapsed;composer.render();}
 init().catch(error=>{console.error(error);loading.textContent='卡牌暂时无法加载。\n'+error.message+'\n请通过本地服务打开网页，并确认素材已生成。';loading.setAttribute('role','alert');window.__holo={ready:false,error:error.message};});
 

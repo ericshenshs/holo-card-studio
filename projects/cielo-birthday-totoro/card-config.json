@@ -1,0 +1,29 @@
+{
+  "title": "Cielo 生日快乐",
+  "subtitle": "Happy Birthday Cielo",
+  "technique": "龙猫の祝福",
+  "tagline": "A Warm Embrace from the Forest Spirit",
+  "edition": "003 / 003",
+  "collection": "个人全息典藏",
+  "description": "A super cute birthday card for Cielo — Totoro holds a birthday cake under a canopy of magical forest lights, surrounded by soot sprites carrying tiny presents. April 17, 2026.",
+  "assets": {
+    "model": "./assets/card.glb",
+    "subject": "./assets/subject.png",
+    "background": "./assets/background.png",
+    "text": "./assets/text.png",
+    "lineart": "./assets/lineart.png"
+  },
+  "parameters": {
+    "subjectScale": 1.25,
+    "subjectDepth": 0.4,
+    "backgroundDepth": -0.25,
+    "foil": 0.65
+  },
+  "safeArea": {
+    "scale": 1.12,
+    "offset": [
+      -0.06,
+      -0.085
+    ]
+  }
+}

@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090d13">
+<title>幻光典藏 · 收藏集</title>
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+<header>
+  <a class="brand" href="/" aria-label="幻光典藏首页">
+    <span class="seal">幻</span>
+    <span>幻光典藏<small>HOLOGRAPHIC ATELIER</small></span>
+  </a>
+  <span class="count" id="card-count"></span>
+</header>
+
+<!-- [cc] Gallery view — shown by default -->
+<div id="gallery-view">
+  <section class="gallery">
+    <div class="gallery-heading">
+      <h1>收藏集</h1>
+      <p>COLLECTION ARCHIVE — ALL HOLOGRAPHIC CARDS</p>
+    </div>
+    <div class="cards-grid" id="cards-grid"></div>
+    <div class="empty" id="empty" style="display:none">
+      <p>尚无卡牌<br>使用 holo-card-studio 制作你的第一张全息卡牌</p>
+    </div>
+  </section>
+</div>
+
+<!-- [cc] Card viewer — shown when a card is selected -->
+<div id="card-view" style="display:none">
+  <nav class="nav-bar">
+    <a href="#" id="back-btn">← 返回收藏集</a>
+    <span class="sep">·</span>
+    <span class="current" id="current-card-name"></span>
+  </nav>
+  <div class="viewer-wrap">
+    <iframe class="viewer-frame" id="viewer-frame" sandbox="allow-scripts allow-same-origin"></iframe>
+  </div>
+</div>
+
+<footer>
+  <span>光随手动，画有余深。</span>
+  <span>DESIGNED TO BE SEEN IN MOTION</span>
+</footer>
+
+<script>
+// [cc] Fetch card data and render gallery
+const grid = document.getElementById('cards-grid');
+const empty = document.getElementById('empty');
+const galleryView = document.getElementById('gallery-view');
+const cardView = document.getElementById('card-view');
+const viewerFrame = document.getElementById('viewer-frame');
+const backBtn = document.getElementById('back-btn');
+const currentName = document.getElementById('current-card-name');
+const cardCount = document.getElementById('card-count');
+
+let cards = [];
+
+async function loadCards() {
+  try {
+    const res = await fetch('/api/cards');
+    cards = await res.json();
+  } catch {
+    cards = [];
+  }
+
+  cardCount.textContent = cards.length + ' CARDS';
+
+  if (cards.length === 0) {
+    empty.style.display = '';
+    return;
+  }
+
+  grid.innerHTML = '';
+  for (const card of cards) {
+    const tile = document.createElement('div');
+    tile.className = 'card-tile';
+    // [cc] Only allow clicking cards that have a built web viewer
+    if (!card.hasWeb) tile.style.opacity = '0.4';
+    tile.innerHTML = `
+      <div class="preview">
+        <div class="bg-layer" style="background-image:url('${card.background}')"></div>
+        <div class="subject-layer">
+          <img src="${card.thumbnail}" alt="${card.title}" loading="lazy">
+        </div>
+      </div>
+      <span class="edition-badge">${card.edition || ''}</span>
+      <div class="info">
+        <div class="eyebrow"><span></span><span>${card.collection || '幻光典藏'}</span></div>
+        <h2>${card.title}</h2>
+        <p class="subtitle">${card.subtitle || ''}</p>
+        <p class="desc">${card.description || ''}</p>
+      </div>
+      <div class="technique-badge">
+        <span>${card.tagline || ''}</span>
+        <span class="tech-name">${card.technique || ''}</span>
+      </div>
+    `;
+    if (card.hasWeb) {
+      tile.addEventListener('click', () => openCard(card));
+    }
+    grid.appendChild(tile);
+  }
+}
+
+// [cc] Switch to card viewer
+function openCard(card) {
+  galleryView.style.display = 'none';
+  cardView.style.display = '';
+  currentName.textContent = card.title + ' · ' + card.subtitle;
+  viewerFrame.src = `/card/${card.slug}/`;
+  history.pushState({ slug: card.slug }, '', `#${card.slug}`);
+}
+
+// [cc] Switch back to gallery
+function showGallery() {
+  cardView.style.display = 'none';
+  galleryView.style.display = '';
+  viewerFrame.src = '';
+  history.pushState({}, '', '/');
+}
+
+backBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  showGallery();
+});
+
+// [cc] Handle browser back/forward navigation
+window.addEventListener('popstate', (e) => {
+  if (e.state?.slug) {
+    const card = cards.find(c => c.slug === e.state.slug);
+    if (card?.hasWeb) {
+      galleryView.style.display = 'none';
+      cardView.style.display = '';
+      currentName.textContent = card.title + ' · ' + card.subtitle;
+      viewerFrame.src = `/card/${card.slug}/`;
+    }
+  } else {
+    cardView.style.display = 'none';
+    galleryView.style.display = '';
+    viewerFrame.src = '';
+  }
+});
+
+// [cc] On load, check if URL hash points to a specific card
+async function init() {
+  await loadCards();
+  const hash = location.hash.slice(1);
+  if (hash) {
+    const card = cards.find(c => c.slug === hash);
+    if (card?.hasWeb) openCard(card);
+  }
+}
+
+init();
+</script>
+</body>
+</html>
