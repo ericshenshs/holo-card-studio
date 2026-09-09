@@ -22,6 +22,39 @@ for p in VENV_SITE:
 from openai import OpenAI
 
 
+def shortlist_candidates(client, card_description, candidates, category, count=5):
+    """[cc] Use a quick LLM call to filter a pool of FFTA elements down to the ones
+    that best fit the card's theme. Returns a subset of the original list.
+    This ensures the random pick is thematically coherent — e.g. a "morning calm"
+    card won't get paired with a volcanic wasteland background."""
+    numbered = "\n".join(f"{i}: {c}" for i, c in enumerate(candidates))
+    response = client.chat.completions.create(
+        model="gpt-4.1-mini",
+        messages=[{
+            "role": "user",
+            "content": (
+                f"I'm making a collectible card about: \"{card_description}\"\n\n"
+                f"Below is a list of FFTA {category} options. Pick the {count} that best "
+                f"fit the card's mood, time of day, energy level, and theme. "
+                f"Reply with ONLY the numbers, comma-separated, nothing else.\n\n"
+                f"{numbered}"
+            ),
+        }],
+        temperature=0.7,
+    )
+    # [cc] Parse the comma-separated indices, fall back to random if parsing fails.
+    try:
+        raw = response.choices[0].message.content.strip()
+        indices = [int(x.strip()) for x in raw.split(",") if x.strip().isdigit()]
+        shortlisted = [candidates[i] for i in indices if 0 <= i < len(candidates)]
+        if shortlisted:
+            return shortlisted
+    except (ValueError, IndexError):
+        pass
+    # [cc] Fallback: return full pool (random.choice will still work)
+    return candidates
+
+
 def generate_image(client, prompt, size="1024x1536", style="vivid", quality="high"):
     """[cc] Generate an image using DALL-E and return raw PNG bytes."""
     response = client.images.generate(
@@ -182,22 +215,29 @@ def main():
 
     print(f"Art style: {args.art_style}")
 
-    # [cc] For FFTA style, randomly pick a foreground element (character or weapon)
-    # and a background scene, then build a prompt where the card's topic is primary
-    # and the FFTA element is the visual vehicle adapted to fit the topic's context
-    # (time of day, mood, setting, activity). The result must make sense as a whole —
-    # e.g. a "morning gym workout" card should show dawn lighting and energetic posing,
-    # regardless of which FFTA class or weapon was randomly drawn.
+    # [cc] For FFTA style: first shortlist candidates that fit the card's theme using
+    # a quick LLM call, then randomly pick from the shortlist. This ensures thematic
+    # coherence — e.g. a "morning calm" card won't get a volcanic wasteland, and an
+    # "energy/workout" card won't get a sleepy sage. The card's topic shrinks the pool
+    # before randomness kicks in, so every result makes visual sense.
     if args.art_style == "ffta":
+        print(f"  Shortlisting FFTA elements for: \"{description}\"")
+
         # [cc] 50/50 chance: character class or weapon as foreground subject
         if random.random() < 0.5:
-            fg_pick = random.choice(FFTA_CLASSES)
+            shortlisted = shortlist_candidates(client, description, FFTA_CLASSES, "character classes")
+            fg_pick = random.choice(shortlisted)
             fg_type = "character"
+            print(f"  Shortlisted {len(shortlisted)} classes: {shortlisted}")
         else:
-            fg_pick = random.choice(FFTA_WEAPONS)
+            shortlisted = shortlist_candidates(client, description, FFTA_WEAPONS, "weapons")
+            fg_pick = random.choice(shortlisted)
             fg_type = "weapon"
+            print(f"  Shortlisted {len(shortlisted)} weapons: {shortlisted}")
 
-        bg_pick = random.choice(FFTA_SCENES)
+        bg_shortlisted = shortlist_candidates(client, description, FFTA_SCENES, "background scenes")
+        bg_pick = random.choice(bg_shortlisted)
+        print(f"  Shortlisted {len(bg_shortlisted)} scenes: {bg_shortlisted}")
 
         print(f"  FFTA foreground ({fg_type}): {fg_pick}")
         print(f"  FFTA background: {bg_pick}")
