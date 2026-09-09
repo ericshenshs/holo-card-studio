@@ -1,0 +1,29 @@
+{
+  "title": "夜台编码",
+  "subtitle": "Rooftop Night Coding",
+  "technique": "星光编织",
+  "tagline": "Productivity under the stars with Sonsei",
+  "edition": "007 / 007",
+  "collection": "个人全息典藏",
+  "description": "Coding on iPhone with Sonsei on rooftop provides both productivity and sentiments.",
+  "assets": {
+    "model": "./assets/card.glb",
+    "subject": "./assets/subject.png",
+    "background": "./assets/background.png",
+    "text": "./assets/text.png",
+    "lineart": "./assets/lineart.png"
+  },
+  "parameters": {
+    "subjectScale": 1.25,
+    "subjectDepth": 0.4,
+    "backgroundDepth": -0.25,
+    "foil": 0.65
+  },
+  "safeArea": {
+    "scale": 1.12,
+    "offset": [
+      -0.06,
+      -0.085
+    ]
+  }
+}
