@@ -1,0 +1,26 @@
+{
+  "title": "晨练能量",
+  "subtitle": "Morning Gym Workout",
+  "technique": "能量块训练",
+  "tagline": "Use a message load reducing block, then a gym block.",
+  "edition": "004 / 005",
+  "collection": "个人全息典藏",
+  "description": "Use a gym block in the morning when we still have energy for a gym workout.",
+  "assets": {
+    "model": "./assets/card.glb",
+    "subject": "./assets/subject.png",
+    "background": "./assets/background.png",
+    "text": "./assets/text.png",
+    "lineart": "./assets/lineart.png"
+  },
+  "parameters": {
+    "subjectScale": 1.25,
+    "subjectDepth": 0.4,
+    "backgroundDepth": -0.25,
+    "foil": 0.65
+  },
+  "safeArea": {
+    "scale": 1.12,
+    "offset": [-0.06, -0.085]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "title": "晨间拼图",
+  "subtitle": "Morning Z-Puzzle",
+  "technique": "墨笔静思",
+  "tagline": "Start writing on reMarkable before other things kick in.",
+  "edition": "006 / 006",
+  "collection": "个人全息典藏",
+  "description": "The time flows slowly when we're writing and solving Z-puzzle on reMarkable in the morning.",
+  "assets": {
+    "model": "./assets/card.glb",
+    "subject": "./assets/subject.png",
+    "background": "./assets/background.png",
+    "text": "./assets/text.png",
+    "lineart": "./assets/lineart.png"
+  },
+  "parameters": {
+    "subjectScale": 1.25,
+    "subjectDepth": 0.4,
+    "backgroundDepth": -0.25,
+    "foil": 0.65
+  },
+  "safeArea": {
+    "scale": 1.12,
+    "offset": [-0.06, -0.085]
+  }
+}
